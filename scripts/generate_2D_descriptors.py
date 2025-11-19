@@ -6,8 +6,14 @@ from tqdm import tqdm
 import os
 
 # --- CONFIGURATION ---
-INPUT_FILE = '../data/processed/transition1x_cleaned.parquet'
-OUTPUT_FILE = '../data/processed/molecular_descriptors_2D.parquet'
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Go up one level to get the project root (Info-Theoretic.../)
+project_root = os.path.dirname(script_dir)
+
+# Construct the absolute paths
+INPUT_FILE = os.path.join(project_root, 'data', 'processed', 'transition1x_cleaned.parquet')
+OUTPUT_FILE = os.path.join(project_root, 'data', 'processed', 'molecular_descriptors_2D.parquet')
 # ---------------------
 
 def calculate_2d_descriptors(mol):
