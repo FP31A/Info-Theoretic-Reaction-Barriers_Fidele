@@ -12,7 +12,7 @@ project_root = os.path.dirname(script_dir)
 DATA_DIR = os.path.join(project_root, 'data', 'processed')
 
 INPUT_FILE  = os.path.join(DATA_DIR, 'transition1x_cleaned.parquet')
-OUTPUT_FILE = os.path.join(DATA_DIR, 'molecular_descriptors_QM_explicit.parquet')
+OUTPUT_FILE = os.path.join(DATA_DIR, 'molecular_descriptors_QM_explicit_E2.parquet')
 
 # CONSTANT: 1 Hartree = 27.211... eV
 HARTREE_TO_EV = 27.211386245988
