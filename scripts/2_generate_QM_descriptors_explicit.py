@@ -143,8 +143,20 @@ def main():
         # 2. Product
         pa, pp = sanitize_data(row['product_atomic_numbers'], row['product_positions'])
         p_res = run_calculation(pa, pp)
+
+        # --- NEW CODE START: THE PSEUDO-TS ---
+        # 3. Midpoint (The Steric Probe)
+        # We assume atom mapping is consistent (Index 0 in R is Index 0 in P)
+        try:
+            # Linear Interpolation of coordinates
+            mid_pos = (np.array(rp) + np.array(pp)) / 2.0
+            # Use reactant atomic numbers (should be same as product)
+            m_res = run_calculation(ra, mid_pos)
+        except Exception as e:
+            m_res = {'energy_ev': None}
+        # --- NEW CODE END ---
         
-        # 3. Store Results (INCLUDES GAP NOW)
+        # 4. Store Results (INCLUDES GAP NOW)
         feat = {
             'reaction_id': rxn_id,
             # Reactant
@@ -157,14 +169,22 @@ def main():
             'P_dipole':    p_res.get('dipole'),
             'P_gap':       p_res.get('gap'),
             'P_charges':   p_res.get('charges'),
+            'Mid_energy_eV': m_res.get('energy_ev')
         }
         
-        # 4. Calculate Deltas
+        # 5. Calculate Deltas
         # Energy Delta
         if feat['R_energy_eV'] is not None and feat['P_energy_eV'] is not None:
             feat['delta_qm_energy_eV'] = feat['P_energy_eV'] - feat['R_energy_eV']
         else:
             feat['delta_qm_energy_eV'] = None
+
+        # NEW FEATURE: Steric Barrier Proxy
+        # (Energy of Middle - Energy of Reactant)
+        if feat['R_energy_eV'] is not None and feat['Mid_energy_eV'] is not None:
+             feat['steric_strain_eV'] = feat['Mid_energy_eV'] - feat['R_energy_eV']
+        else:
+             feat['steric_strain_eV'] = None
 
         # Gap Delta (Reaction Hardness Change)
         if feat['R_gap'] is not None and feat['P_gap'] is not None:
